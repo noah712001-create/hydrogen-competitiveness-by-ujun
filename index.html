@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="수소연료전지차와 배터리전기차의 에너지 사용량 및 온실가스 배출량을 비교하는 계산기">
+<title>수소 경쟁력 계산기</title>
+<style>
+:root{--navy:#17365d;--blue:#2d6a9f;--pale:#edf4fa;--ink:#1d2935;--muted:#637282;--line:#d9e2ea;--yellow:#fff6d9;--green:#eaf5ed;--red:#fff0ec;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;line-height:1.55}
+header{background:linear-gradient(120deg,#17365d,#285f87);color:white;padding:34px 18px 30px}
+.wrap{max-width:1080px;margin:auto;padding:0 18px}
+.kicker{font-size:.82rem;letter-spacing:.08em;opacity:.8;font-weight:700}
+h1{font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.2;margin:8px 0}
+header p{max-width:720px;margin:12px 0 0;color:#e5eef6}
+main{padding:24px 0 50px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 4px 16px #18324a0b}
+.card h2{font-size:1.12rem;margin:0 0 14px;color:var(--navy)}
+.full{grid-column:1/-1}
+label{display:block;font-size:.9rem;font-weight:650;margin:12px 0 5px}
+input[type=number]{width:100%;padding:11px 12px;border:1px solid #cbd6e0;border-radius:9px;font:inherit;background:#fff;color:var(--ink)}
+input:focus{outline:3px solid #d5e8f8;border-color:var(--blue)}
+.fieldgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+small,.muted{color:var(--muted);font-size:.84rem}
+.rangehead{display:flex;justify-content:space-between;gap:12px;align-items:center}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.pill{display:inline-block;padding:4px 9px;border-radius:99px;background:var(--pale);color:var(--navy);font-size:.82rem;font-weight:700}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.metric{background:#f6f9fc;border:1px solid var(--line);border-radius:12px;padding:14px}
+.metric .name{font-size:.82rem;color:var(--muted)}
+.metric strong{display:block;font-size:clamp(1.2rem,3vw,1.7rem);margin:5px 0;color:var(--navy);overflow-wrap:anywhere}
+.metric span{font-size:.8rem;color:var(--muted)}
+.barrow{display:grid;grid-template-columns:100px 1fr 85px;gap:10px;align-items:center;margin:12px 0;font-size:.9rem}
+.track{height:14px;background:#edf1f5;border-radius:99px;overflow:hidden}
+.bar{height:100%;border-radius:99px;background:#2d6a9f;width:0}
+.bar.ev{background:#4c9b72}
+.status{padding:12px 14px;border-radius:10px;background:var(--pale);margin-top:14px}
+.status.good{background:var(--green)}.status.warn{background:var(--yellow)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{background:#f4f7fa;color:var(--navy)}
+.tablewrap{overflow-x:auto}
+details{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+summary{font-weight:700;color:var(--navy);cursor:pointer}
+.note{background:#fff8e8;border:1px solid #f0dfae;padding:13px 15px;border-radius:12px;font-size:.88rem}
+footer{padding:20px 0 34px;color:var(--muted);font-size:.82rem}
+button{border:0;border-radius:9px;background:var(--navy);color:#fff;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer}
+button:hover{background:#24527e}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.metrics{grid-template-columns:1fr}.fieldgrid{grid-template-columns:1fr}.barrow{grid-template-columns:78px 1fr 75px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="kicker">HYDROGEN COMPETITIVENESS TOOL</div>
+<h1>수소 경쟁력 계산기</h1>
+<p>수소연료전지차와 배터리전기차의 에너지 사용량 및 주행거리당 온실가스 배출량을 조건별로 비교합니다.</p>
+</div></header>
+<main class="wrap">
+<div class="grid">
+<section class="card">
+<h2>1. 비교 조건 입력</h2>
+<div class="fieldgrid">
+<div><label for="gray">그레이수소 배출계수 (kgCO₂e/kg-H₂)</label><input id="gray" type="number" min="0" step="0.1" value="11.2"></div>
+<div><label for="green">그린수소 배출계수 (kgCO₂e/kg-H₂)</label><input id="green" type="number" min="0" step="0.1" value="0.6"></div>
+<div><label for="hcons">수소차 소비량 (kg/100 km)</label><input id="hcons" type="number" min="0" step="0.01" value="0.95"></div>
+<div><label for="econs">전기차 소비 전력 (kWh/100 km)</label><input id="econs" type="number" min="0" step="0.1" value="18"></div>
+<div><label for="grid">전력 배출계수 (kgCO₂e/kWh)</label><input id="grid" type="number" min="0" step="0.0001" value="0.4173"></div>
+<div><label for="lhv">수소 저위발열량 (kWh/kg)</label><input id="lhv" type="number" min="0.01" step="0.01" value="33.33"></div>
+</div>
+<details><summary>입력값에 대한 설명</summary>
+<p class="muted">수소 생산경로와 전력 생산구성에 따라 배출계수는 달라집니다. 차량 소비량도 차종·시험 기준에 따라 달라집니다. 현재 값은 계산기 사용법을 보여주기 위한 예시값이며, 공식 통계값으로 간주하면 안 됩니다.</p>
+</details>
+</section>
+<section class="card">
+<h2>2. 그린수소 비율 조절</h2>
+<div class="rangehead"><label for="share">전체 수소 중 그린수소 비율</label><strong class="pill" id="shareLabel">30%</strong></div>
+<input id="share" type="range" min="0" max="100" step="1" value="30">
+<div class="rangehead muted"><span>그레이수소 100%</span><span>그린수소 100%</span></div>
+<p class="muted">슬라이더를 움직이면 혼합 수소의 배출계수와 수소차 결과가 즉시 바뀝니다.</p>
+<div class="status" id="mixFactor">혼합 수소 배출계수: 계산 중</div>
+</section>
+<section class="card full">
+<h2>3. 승용차 주행거리당 배출량 비교</h2>
+<div class="metrics">
+<div class="metric"><div class="name">수소연료전지차</div><strong id="hResult">—</strong><span>kgCO₂e/km</span></div>
+<div class="metric"><div class="name">배터리전기차</div><strong id="eResult">—</strong><span>kgCO₂e/km</span></div>
+<div class="metric"><div class="name">수소차 - 전기차</div><strong id="diffResult">—</strong><span>kgCO₂e/km (음수면 수소차가 낮음)</span></div>
+</div>
+<div style="margin-top:20px">
+<div class="barrow"><b>수소차</b><div class="track"><div class="bar" id="hBar"></div></div><span id="hBarText">—</span></div>
+<div class="barrow"><b>전기차</b><div class="track"><div class="bar ev" id="eBar"></div></div><span id="eBarText">—</span></div>
+</div>
+<div class="status" id="interpretation" aria-live="polite">계산 결과가 여기에 표시됩니다.</div>
+</section>
+<section class="card">
+<h2>4. 배출량이 같아지는 그린수소 비율</h2>
+<div class="metric"><div class="name">손익분기 그린수소 비율</div><strong id="breakEven">—</strong><span>수소차와 전기차의 주행거리당 배출량이 같아지는 비율</span></div>
+<p class="muted" id="breakNote" style="margin-top:12px"></p>
+</section>
+<section class="card">
+<h2>5. 에너지 사용량 참고</h2>
+<div class="metric"><div class="name">수소차에 공급되는 수소 화학에너지</div><strong id="hEnergy">—</strong><span>kWh/100 km (저위발열량 기준)</span></div>
+<p class="muted">이 값은 수소의 화학에너지 환산량입니다. 전기차의 충전 전력과 에너지 변환 경계가 완전히 같지 않으므로, 단순 수치만으로 차량 효율의 우열을 단정하면 안 됩니다.</p>
+</section>
+<section class="card full">
+<h2>6. 차종별 비교 확장</h2>
+<p class="muted">아래에 비교하려는 차종의 실제 소비량을 입력하세요. 빈칸은 계산하지 않습니다. 같은 용도와 비슷한 크기의 차량끼리 비교하는 것이 좋습니다.</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>차종</th><th>수소 소비량 (kg/100 km)</th><th>전력 소비량 (kWh/100 km)</th><th>수소차 (kgCO₂e/km)</th><th>전기차 (kgCO₂e/km)</th></tr></thead>
+<tbody id="vehicleRows"></tbody>
+</table>
+</div>
+</section>
+<section class="card full">
+<h2>계산식과 활용 시 주의사항</h2>
+<p><b>혼합 수소 배출계수</b> = 그레이수소 배출계수 × (1 − 그린수소 비율) + 그린수소 배출계수 × 그린수소 비율</p>
+<p><b>수소차 배출량</b> = 수소 소비량(kg/100 km) ÷ 100 × 혼합 수소 배출계수</p>
+<p><b>전기차 배출량</b> = 전력 소비량(kWh/100 km) ÷ 100 × 전력 배출계수</p>
+<div class="note"><b>중요한 한계</b><br>이 계산기는 수소 생산경로와 전력 배출계수를 단순화해 차량 운행단계의 배출량을 비교합니다. 차량·배터리·연료전지·저장탱크·충전소 제조 및 폐기, 수소 운송 거리, 실제 운전 조건 등을 모두 포함한 전과정평가(LCA)는 아닙니다. 보고서에 결과를 사용할 때는 입력값의 출처·연도·산정 범위를 함께 제시하고, 두 차량의 비교 경계를 가능한 한 일치시켜야 합니다.</div>
+<p class="muted" style="margin-top:12px">기본값은 설명용 예시입니다. 국내 공식 전력 배출계수, 공인 차량 연비·전비, 수소 생산경로별 전과정 배출량 자료로 교체해 사용하세요.</p>
+<button onclick="resetDefaults()" type="button">예시값으로 초기화</button>
+</section>
+</div>
+</main>
+<footer><div class="wrap">수소 경쟁력 계산기 · 교육 및 탐구 목적의 단순 비교 도구</div></footer>
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>Math.max(0,Number($(id).value)||0);
+const fmt=(v,d=3)=>Number.isFinite(v)?v.toFixed(d):"계산 불가";
+function calculate(){
+ const gray=num("gray"), green=num("green"), share=num("share")/100;
+ const hc=num("hcons"), ec=num("econs"), gf=num("grid"), lhv=num("lhv");
+ const mixed=gray*(1-share)+green*share;
+ const h=hc/100*mixed, e=ec/100*gf, diff=h-e;
+ $("shareLabel").textContent=Math.round(share*100)+"%";
+ $("mixFactor").textContent="혼합 수소 배출계수: "+fmt(mixed,3)+" kgCO₂e/kg-H₂";
+ $("hResult").textContent=fmt(h,4); $("eResult").textContent=fmt(e,4); $("diffResult").textContent=(diff>0?"+":"")+fmt(diff,4);
+ const max=Math.max(h,e,0.000001);
+ $("hBar").style.width=(h/max*100)+"%"; $("eBar").style.width=(e/max*100)+"%";
+ $("hBarText").textContent=fmt(h,4); $("eBarText").textContent=fmt(e,4);
+ let msg;
+ if(Math.abs(diff)<1e-9) msg="현재 입력 조건에서 두 차량의 주행거리당 배출량이 거의 같습니다.";
+ else if(diff<0) msg="현재 입력 조건에서는 수소차의 주행거리당 배출량이 전기차보다 낮습니다.";
+ else msg="현재 입력 조건에서는 전기차의 주행거리당 배출량이 수소차보다 낮습니다.";
+ $("interpretation").textContent=msg;
+ $("interpretation").className="status "+(diff<=0?"good":"warn");
+ const denom=hc*(gray-green);
+ const x=(ec*gf*100/hc-green)/(gray-green);
+ if(Math.abs(gray-green)<1e-12){$("breakEven").textContent="산출 불가";$("breakNote").textContent="그레이수소와 그린수소 배출계수가 같아 비율 변화가 배출량에 영향을 주지 않습니다.";}
+ else if(x<0){$("breakEven").textContent="0% 미만";$("breakNote").textContent="이 입력 조건에서는 그린수소 비율이 0%여도 수소차 배출량이 전기차보다 낮습니다.";}
+ else if(x>1){$("breakEven").textContent="100% 초과";$("breakNote").textContent="그린수소 비율을 100%로 높여도 수소차 배출량이 전기차보다 낮아지지 않습니다.";}
+ else {$("breakEven").textContent=(x*100).toFixed(1)+"%";$("breakNote").textContent="그린수소 비율이 약 "+(x*100).toFixed(1)+"%일 때 두 차량의 배출량이 같아집니다.";}
+ $("hEnergy").textContent=fmt(hc*lhv,2);
+}
+const vehicleTypes=["승용차","시내버스","장거리 버스","중형 화물차","대형 화물차"];
+function buildRows(){
+ $("vehicleRows").innerHTML="";
+ vehicleTypes.forEach((name,i)=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${name}</td><td><input aria-label="${name} 수소 소비량" type="number" min="0" step="0.01" id="vh${i}" placeholder="입력"></td><td><input aria-label="${name} 전력 소비량" type="number" min="0" step="0.1" id="ve${i}" placeholder="입력"></td><td id="vhr${i}">—</td><td id="ver${i}">—</td>`;
+  $("vehicleRows").appendChild(tr);
+  ["vh"+i,"ve"+i].forEach(id=>$(id).addEventListener("input",calcVehicles));
+ });
+}
+function calcVehicles(){
+ const mixed=num("gray")*(1-num("share")/100)+num("green")*num("share")/100, gf=num("grid");
+ vehicleTypes.forEach((_,i)=>{
+  const h=Number($("vh"+i).value),e=Number($("ve"+i).value);
+  $("vhr"+i).textContent=Number.isFinite(h)&&$("vh"+i).value!==""?fmt(h/100*mixed,4):"—";
+  $("ver"+i).textContent=Number.isFinite(e)&&$("ve"+i).value!==""?fmt(e/100*gf,4):"—";
+ });
+}
+["gray","green","share","hcons","econs","grid","lhv"].forEach(id=>$(id).addEventListener("input",()=>{calculate();calcVehicles();}));
+function resetDefaults(){
+ const defaults={gray:11.2,green:0.6,share:30,hcons:0.95,econs:18,grid:0.4173,lhv:33.33};
+ Object.entries(defaults).forEach(([k,v])=>$(k).value=v);
+ vehicleTypes.forEach((_,i)=>{$("vh"+i).value="";$("ve"+i).value="";});
+ calculate();calcVehicles();
+}
+buildRows();calculate();calcVehicles();
+</script>
+</body>
+</html>
